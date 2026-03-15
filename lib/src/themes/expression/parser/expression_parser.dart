@@ -65,6 +65,7 @@ class ExpressionParser {
     _register(GeometryTypeExpressionParser(this));
     _register(CoalesceExpressionParser(this));
     _register(ConcatExpressionParser(this));
+    _register(FormatExpressionParser(this));
     _register(StringExpressionParser(this));
     _register(NaryMathExpressionParser(this, '*', (a, b) => a * b));
     _register(NaryMathExpressionParser(this, '/', (a, b) => a / b));
@@ -78,6 +79,7 @@ class ExpressionParser {
     _register(LetExpressionParser(this, varParser));
     _register(IsSupportedScriptExpressionParser(this));
     _register(ImageExpressionParser(this));
+    _register(LiteralExpressionParser(this));
   }
 
   Set<String> supportedOperators() => _parserByOperator.keys.toSet();
@@ -207,6 +209,19 @@ class ExpressionParser {
     }
     return LiteralExpression(json);
   }
+}
+
+
+class LiteralExpressionParser extends ExpressionComponentParser {
+  LiteralExpressionParser(ExpressionParser parser) : super(parser, 'literal');
+
+  @override
+  bool matches(List<dynamic> json) {
+    return super.matches(json) && json.length == 2;
+  }
+
+  @override
+  Expression? parse(List<dynamic> json) => LiteralExpression(json[1]);
 }
 
 abstract class ExpressionComponentParser {
