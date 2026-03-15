@@ -23,6 +23,31 @@ class StringExpression extends Expression<String> {
   bool get isConstant => false;
 }
 
+class FormatExpression extends Expression<String> {
+  final List<Expression> _sections;
+
+  FormatExpression(this._sections)
+      : super(
+          'format(${_sections.map((e) => e.cacheKey).join(',')})',
+          _sections.joinProperties(),
+        );
+
+  @override
+  String evaluate(EvaluationContext context) {
+    final buffer = StringBuffer();
+    for (final section in _sections) {
+      final value = section.evaluate(context);
+      if (value != null) {
+        buffer.write(value.toString());
+      }
+    }
+    return buffer.toString();
+  }
+
+  @override
+  bool get isConstant => _sections.every((e) => e.isConstant);
+}
+
 extension StringExpressionExtension on Expression {
   Expression<String?> asOptionalStringExpression() =>
       _OptionalStringExpression(this);

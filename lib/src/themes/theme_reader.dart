@@ -241,14 +241,9 @@ class ThemeReader {
         .parse(layout?['text-anchor'])
         .asLayoutAnchorExpression();
     final font = layout?['text-font'];
-    String? fontFamily;
-    FontStyle? fontStyle;
-    if (font is List<dynamic> && font.isNotEmpty) {
-      fontFamily = font[0];
-      if (fontFamily != null && fontFamily.toLowerCase().contains("italic")) {
-        fontStyle = FontStyle.italic;
-      }
-    }
+    final normalizedFont = _normalizeStaticTextFont(font);
+    final fontFamily = normalizedFont?.family;
+    final fontStyle = normalizedFont?.style;
     final transform = layout?['text-transform'];
     TextTransformFunction? textTransform;
     if (transform == 'uppercase') {
@@ -311,6 +306,127 @@ class ThemeReader {
 Map<String, dynamic> _metadata(jsonLayer) {
   final layerMetadata = jsonLayer['metadata'];
   return (layerMetadata is Map<String, dynamic>) ? layerMetadata : {};
+}
+
+
+const _expressionOperators = {
+  '!',
+  '!=',
+  '!has',
+  '!in',
+  '%',
+  '*',
+  '+',
+  '-',
+  '/',
+  '<',
+  '<=',
+  '==',
+  '>',
+  '>=',
+  '^',
+  'all',
+  'any',
+  'case',
+  'coalesce',
+  'concat',
+  'format',
+  'geometry-type',
+  'get',
+  'has',
+  'image',
+  'in',
+  'interpolate',
+  'is-supported-script',
+  'let',
+  'literal',
+  'match',
+  'sqrt',
+  'step',
+  'string',
+  'to-boolean',
+  'to-number',
+  'to-string',
+  'var',
+};
+
+class _NormalizedFont {
+  final String? family;
+  final FontStyle? style;
+
+  const _NormalizedFont(this.family, this.style);
+}
+
+_NormalizedFont? _normalizeStaticTextFont(dynamic fontJson) {
+  final rawFonts = <String>[];
+  if (fontJson is String) {
+    rawFonts.add(fontJson);
+  } else {
+    _collectFontNames(fontJson, rawFonts);
+  }
+  if (rawFonts.isEmpty) {
+    return null;
+  }
+
+  String? family;
+  FontStyle? style;
+  for (final rawFont in rawFonts) {
+    final nextFamily = _normalizeFontFamily(rawFont);
+    final nextStyle = _normalizeFontStyle(rawFont);
+    family ??= nextFamily;
+    style ??= nextStyle;
+    if (family != nextFamily || style != nextStyle) {
+      return null;
+    }
+  }
+
+  return _NormalizedFont(family, style);
+}
+
+void _collectFontNames(dynamic json, List<String> into) {
+  if (json is List && json.isNotEmpty) {
+    if (json.first is String &&
+        !_expressionOperators.contains(json.first) &&
+        json.every((item) => item is String)) {
+      into.add(json.first.toString());
+      return;
+    }
+
+    if (json[0] == 'literal' && json.length == 2) {
+      final literal = json[1];
+      if (literal is List && literal.isNotEmpty) {
+        into.add(literal.first.toString());
+        return;
+      }
+      if (literal is String) {
+        into.add(literal);
+        return;
+      }
+    }
+
+    for (final child in json.skip(1)) {
+      _collectFontNames(child, into);
+    }
+  }
+}
+
+FontStyle _normalizeFontStyle(String raw) {
+  return raw.toLowerCase().contains('italic')
+      ? FontStyle.italic
+      : FontStyle.normal;
+}
+
+String _normalizeFontFamily(String raw) {
+  var result =
+      raw.trim().replaceAll(RegExp(r'\s+v\d+$', caseSensitive: false), '');
+  result = result.replaceAll(
+    RegExp(
+      r'\s+(regular|medium|italic|bold|semibold|light|book)(\s+italic)?$',
+      caseSensitive: false,
+    ),
+    '',
+  );
+  return result.trim();
 }
 
 const _unknownId = '<unknown>';

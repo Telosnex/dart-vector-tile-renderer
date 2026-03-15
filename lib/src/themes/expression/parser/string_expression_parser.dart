@@ -68,6 +68,33 @@ class ConcatExpressionParser extends ExpressionComponentParser {
   }
 }
 
+class FormatExpressionParser extends ExpressionComponentParser {
+  FormatExpressionParser(ExpressionParser parser) : super(parser, 'format');
+
+  @override
+  bool matches(List<dynamic> json) {
+    return super.matches(json) && json.length >= 3;
+  }
+
+  @override
+  Expression? parse(List json) {
+    final sections = <Expression>[];
+    for (int i = 1; i < json.length; i += 2) {
+      final section = parser.parseOptional(json[i]);
+      if (section == null) {
+        return null;
+      }
+      sections.add(section);
+
+      if (i + 1 < json.length && json[i + 1] is! Map) {
+        return null;
+      }
+    }
+
+    return FormatExpression(sections);
+  }
+}
+
 class StringExpressionParser extends ExpressionComponentParser {
   StringExpressionParser(ExpressionParser parser) : super(parser, 'string');
 
