@@ -29,10 +29,10 @@ class FormatExpression extends Expression<String> {
   final List<Expression> _sections;
 
   FormatExpression(this._sections)
-      : super(
-          'format(${_sections.map((e) => e.cacheKey).join(',')})',
-          _sections.joinProperties(),
-        );
+    : super(
+        'format(${_sections.map((e) => e.cacheKey).join(',')})',
+        _sections.joinProperties(),
+      );
 
   @override
   String evaluate(EvaluationContext context) {

@@ -361,7 +361,6 @@ Map<String, dynamic> _metadata(dynamic jsonLayer) {
   return (layerMetadata is Map<String, dynamic>) ? layerMetadata : {};
 }
 
-
 const _expressionOperators = {
   '!',
   '!=',
@@ -470,8 +469,10 @@ FontStyle _normalizeFontStyle(String raw) {
 }
 
 String _normalizeFontFamily(String raw) {
-  var result =
-      raw.trim().replaceAll(RegExp(r'\s+v\d+$', caseSensitive: false), '');
+  var result = raw.trim().replaceAll(
+    RegExp(r'\s+v\d+$', caseSensitive: false),
+    '',
+  );
   result = result.replaceAll(
     RegExp(
       r'\s+(regular|medium|italic|bold|semibold|light|book)(\s+italic)?$',

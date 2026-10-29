@@ -211,7 +211,6 @@ class ExpressionParser {
   }
 }
 
-
 class LiteralExpressionParser extends ExpressionComponentParser {
   LiteralExpressionParser(ExpressionParser parser) : super(parser, 'literal');
 
