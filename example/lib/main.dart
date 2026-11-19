@@ -1,3 +1,5 @@
+// Keep this Material example compatible with pre-extraction Flutter SDKs.
+// ignore: deprecated_member_use
 import 'package:flutter/material.dart';
 
 import 'tile.dart';

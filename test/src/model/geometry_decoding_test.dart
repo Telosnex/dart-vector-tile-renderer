@@ -1,6 +1,6 @@
 import 'dart:math';
+import 'dart:ui';
 
-import 'package:flutter/material.dart';
 import 'package:test/test.dart';
 import 'package:vector_tile_renderer/src/model/geometry_decoding.dart';
 import 'package:vector_tile_renderer/src/model/geometry_model.dart';
