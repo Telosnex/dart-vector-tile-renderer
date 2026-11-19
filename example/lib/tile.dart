@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:example/tile_painter.dart';
+// Keep this Material example compatible with pre-extraction Flutter SDKs.
+// ignore: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 import 'dart:ui' as ui;

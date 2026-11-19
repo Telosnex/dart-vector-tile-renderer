@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:example/tile.dart';
-import 'package:flutter/material.dart' hide Theme;
+import 'package:flutter/widgets.dart';
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 import 'dart:ui' as ui;
 
